@@ -1,6 +1,10 @@
 # Getting started with rocketmq-helm
 
-This mode is ```2m-2s-async```.
+## Profile
+
+- This mode is ```2m-2s-async```
+
+- rocketmq version: ```4.9.4```
 
 ## Pulling rocketmq-helm
 
@@ -11,8 +15,6 @@ There are two different ways to install rocketmq by helm.
     ```bash
     # git clone https://github.com/sunnyzhy/rocketmq-helm.git rocketmq
 
-    # helm package rocketmq
-    
     # rm -rf ./rocketmq/charts/README.md
     
     # helm package rocketmq
@@ -31,4 +33,5 @@ There are two different ways to install rocketmq by helm.
 ## View rocketmq dashboard
 
 - url: ```http://<host or ip>:30080/```
+
 - ```username/password: admin/admin```
