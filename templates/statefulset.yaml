@@ -1,0 +1,341 @@
+{{- $rocketmqVersion := .Values.image.tag | default .Chart.AppVersion }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-namesrv
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: namesrv
+    app.kubernetes.io/component: namesrv
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ include "rocketmq.fullname" . }}-namesrv-hl
+  replicas: {{ .Values.namesrv.replicas  }}
+  selector:
+    matchLabels:
+      app: namesrv
+      app.kubernetes.io/component: namesrv
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: namesrv
+       app.kubernetes.io/component: namesrv
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: rocketmq
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        command: ["sh","-c",{{ printf "/home/rocketmq/rocketmq-%s/bin/mqnamesrv" $rocketmqVersion }}]
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-broker-a
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: broker
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ include "rocketmq.fullname" . }}-broker-a-hl
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: broker
+       app.kubernetes.io/component: broker
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: rocketmq
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a.properties" $rocketmqVersion $rocketmqVersion }}]
+        volumeMounts:
+          - mountPath: /root/logs
+            name: rocketmq-data
+            subPath: logs
+          - mountPath: /root/store
+            name: rocketmq-data
+            subPath: store
+          - name: rocketmq-config
+            mountPath: {{ printf "/home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a.properties" $rocketmqVersion }}
+            subPath: broker-a.properties
+      volumes:
+      - name: rocketmq-config
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: broker-a.properties
+            path: broker-a.properties
+  volumeClaimTemplates:
+  - metadata:
+      name: rocketmq-data
+      namespace: {{ .Release.Namespace }}
+      labels:
+        app: broker
+        app.kubernetes.io/component: broker
+        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+        helm.sh/chart: {{ include "rocketmq.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - {{ .Values.persistence.accessMode | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      storageClassName: {{ .Values.persistence.storageClass | quote }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-broker-a-s
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: broker
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ include "rocketmq.fullname" . }}-broker-a-s-hl
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: broker
+       app.kubernetes.io/component: broker
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: rocketmq
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a-s.properties" $rocketmqVersion $rocketmqVersion }}]
+        volumeMounts:
+          - mountPath: /root/logs
+            name: rocketmq-data
+            subPath: logs
+          - mountPath: /root/store
+            name: rocketmq-data
+            subPath: store
+          - name: rocketmq-config
+            mountPath: {{ printf "/home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a-s.properties" $rocketmqVersion }}
+            subPath: broker-a-s.properties
+      volumes:
+      - name: rocketmq-config
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: broker-a-s.properties
+            path: broker-a-s.properties
+  volumeClaimTemplates:
+  - metadata:
+      name: rocketmq-data
+      namespace: {{ .Release.Namespace }}
+      labels:
+        app: broker
+        app.kubernetes.io/component: broker
+        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+        helm.sh/chart: {{ include "rocketmq.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - {{ .Values.persistence.accessMode | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      storageClassName: {{ .Values.persistence.storageClass | quote }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-broker-b
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: broker
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ include "rocketmq.fullname" . }}-broker-b-hl
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: broker
+       app.kubernetes.io/component: broker
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: rocketmq
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b.properties" $rocketmqVersion $rocketmqVersion }}]
+        volumeMounts:
+          - mountPath: /root/logs
+            name: rocketmq-data
+            subPath: logs
+          - mountPath: /root/store
+            name: rocketmq-data
+            subPath: store
+          - name: rocketmq-config
+            mountPath: {{ printf "/home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b.properties" $rocketmqVersion }}
+            subPath: broker-b.properties
+      volumes:
+      - name: rocketmq-config
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: broker-b.properties
+            path: broker-b.properties
+  volumeClaimTemplates:
+  - metadata:
+      name: rocketmq-data
+      namespace: {{ .Release.Namespace }}
+      labels:
+        app: broker
+        app.kubernetes.io/component: broker
+        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+        helm.sh/chart: {{ include "rocketmq.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - {{ .Values.persistence.accessMode | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      storageClassName: {{ .Values.persistence.storageClass | quote }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-broker-b-s
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: broker
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ include "rocketmq.fullname" . }}-broker-b-s-hl
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: broker
+       app.kubernetes.io/component: broker
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: rocketmq
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b-s.properties" $rocketmqVersion $rocketmqVersion }}]
+        volumeMounts:
+          - mountPath: /root/logs
+            name: rocketmq-data
+            subPath: logs
+          - mountPath: /root/store
+            name: rocketmq-data
+            subPath: store
+          - name: rocketmq-config
+            mountPath: {{ printf "/home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b-s.properties" $rocketmqVersion }}
+            subPath: broker-b-s.properties
+      volumes:
+      - name: rocketmq-config
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: broker-b-s.properties
+            path: broker-b-s.properties
+  volumeClaimTemplates:
+  - metadata:
+      name: rocketmq-data
+      namespace: {{ .Release.Namespace }}
+      labels:
+        app: broker
+        app.kubernetes.io/component: broker
+        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+        helm.sh/chart: {{ include "rocketmq.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - {{ .Values.persistence.accessMode | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      storageClassName: {{ .Values.persistence.storageClass | quote }}

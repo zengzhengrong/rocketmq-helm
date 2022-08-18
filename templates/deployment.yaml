@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-dashboard
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: dashboard
+    app.kubernetes.io/component: dashboard
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard
+      app.kubernetes.io/component: dashboard
+      app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+     labels:
+       app: dashboard
+       app.kubernetes.io/component: dashboard
+       version: {{ .Chart.AppVersion }}
+       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+       app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: dashboard
+        image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
+        imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        volumeMounts:
+          - mountPath: /application.properties
+            name: config-application
+            subPath: application.properties
+          - mountPath: /users.properties
+            name: config-users
+            subPath: users.properties
+      volumes:
+      - name: config-application
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: application.properties
+            path: application.properties
+      - name: config-users
+        configMap:
+          name: rocketmq-config
+          items:
+          - key: users.properties
+            path: users.properties

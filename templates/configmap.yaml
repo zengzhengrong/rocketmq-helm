@@ -1,0 +1,72 @@
+{{- $fullname := include "rocketmq.fullname" . -}}
+{{- $namesrvReplicas := int .Values.namesrv.replicas }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rocketmq-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  'broker-a.properties': |+
+    brokerClusterName=RocketmqCluster
+    brokerName=broker-a
+    brokerId=0
+    deleteWhen=04
+    fileReservedTime=48
+    brokerRole=ASYNC_MASTER
+    flushDiskType=ASYNC_FLUSH
+    namesrvAddr={{ range $i := until $namesrvReplicas }}{{ if gt $i 0 }}{{ printf ";" }}{{ end }}{{ printf "%s-namesrv-%d.%s-namesrv-hl:9876" $fullname $i $fullname }}{{ end }}
+  'broker-a-s.properties': |+
+    brokerClusterName=RocketmqCluster
+    brokerName=broker-a-s
+    brokerId=1
+    deleteWhen=04
+    fileReservedTime=48
+    brokerRole=SLAVE
+    flushDiskType=ASYNC_FLUSH
+    namesrvAddr={{ range $i := until $namesrvReplicas }}{{ if gt $i 0 }}{{ printf ";" }}{{ end }}{{ printf "%s-namesrv-%d.%s-namesrv-hl:9876" $fullname $i $fullname }}{{ end }}
+  'broker-b.properties': |+
+    brokerClusterName=RocketmqCluster
+    brokerName=broker-b
+    brokerId=0
+    deleteWhen=04
+    fileReservedTime=48
+    brokerRole=ASYNC_MASTER
+    flushDiskType=ASYNC_FLUSH
+    namesrvAddr={{ range $i := until $namesrvReplicas }}{{ if gt $i 0 }}{{ printf ";" }}{{ end }}{{ printf "%s-namesrv-%d.%s-namesrv-hl:9876" $fullname $i $fullname }}{{ end }}
+  'broker-b-s.properties': |+
+    brokerClusterName=RocketmqCluster
+    brokerName=broker-b-s
+    brokerId=1
+    deleteWhen=04
+    fileReservedTime=48
+    brokerRole=SLAVE
+    flushDiskType=ASYNC_FLUSH
+    namesrvAddr={{ range $i := until $namesrvReplicas }}{{ if gt $i 0 }}{{ printf ";" }}{{ end }}{{ printf "%s-namesrv-%d.%s-namesrv-hl:9876" $fullname $i $fullname }}{{ end }}
+  'application.properties': |+
+    server.address=0.0.0.0
+    server.port=8080
+
+    spring.application.name=rocketmq-dashboard
+    spring.http.encoding.charset=UTF-8
+    spring.http.encoding.enabled=true
+    spring.http.encoding.force=true
+    logging.level.root=INFO
+    logging.config=classpath:logback.xml
+
+    rocketmq.config.namesrvAddr={{ printf "%s-namesrv-hl:9876" $fullname }}
+    rocketmq.config.dataPath=/tmp/rocketmq-console/data
+    rocketmq.config.enableDashBoardCollect=true
+    rocketmq.config.ticketKey=ticket
+
+    rocketmq.config.loginRequired=true
+    rocketmq.config.useTLS=false
+  'users.properties': |+
+    admin=admin,1
+    user=user
