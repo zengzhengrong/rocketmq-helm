@@ -80,10 +80,10 @@ spec:
             value: Asia/Shanghai
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /home/rocketmq/logs
             name: rocketmq-data
             subPath: logs
-          - mountPath: /root/store
+          - mountPath: /home/rocketmq/store
             name: rocketmq-data
             subPath: store
           - name: rocketmq-config
@@ -155,10 +155,10 @@ spec:
             value: Asia/Shanghai
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a-s.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /home/rocketmq/logs
             name: rocketmq-data
             subPath: logs
-          - mountPath: /root/store
+          - mountPath: /home/rocketmq/store
             name: rocketmq-data
             subPath: store
           - name: rocketmq-config
@@ -230,10 +230,10 @@ spec:
             value: Asia/Shanghai
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /home/rocketmq/logs
             name: rocketmq-data
             subPath: logs
-          - mountPath: /root/store
+          - mountPath: /home/rocketmq/store
             name: rocketmq-data
             subPath: store
           - name: rocketmq-config
@@ -305,10 +305,10 @@ spec:
             value: Asia/Shanghai
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b-s.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /home/rocketmq/logs
             name: rocketmq-data
             subPath: logs
-          - mountPath: /root/store
+          - mountPath: /home/rocketmq/store
             name: rocketmq-data
             subPath: store
           - name: rocketmq-config
