@@ -54,3 +54,32 @@ spec:
     app.kubernetes.io/component: dashboard
     app.kubernetes.io/name: {{ include "rocketmq.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rocketmq.fullname" . }}-broker-a-hl
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: broker-a-hl
+    app.kubernetes.io/component: broker-a-hl
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    helm.sh/chart: {{ include "rocketmq.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 10911
+      targetPort: 10911
+      protocol: TCP
+      name: broker-a
+  selector:
+    app: broker-a
+    app.kubernetes.io/component: broker-a
+    app.kubernetes.io/name: {{ include "rocketmq.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

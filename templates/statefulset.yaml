@@ -47,7 +47,7 @@ metadata:
   name: {{ include "rocketmq.fullname" . }}-broker-a
   namespace: {{ .Release.Namespace }}
   labels:
-    app: broker
+    app: broker-a
     app.kubernetes.io/component: broker
     app.kubernetes.io/name: {{ include "rocketmq.name" . }}
     helm.sh/chart: {{ include "rocketmq.chart" . }}
@@ -58,15 +58,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broker
-      app.kubernetes.io/component: broker
+      app: broker-a
+      app.kubernetes.io/component: broker-a
       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
      labels:
-       app: broker
-       app.kubernetes.io/component: broker
+       app: broker-a
+       app.kubernetes.io/component: broker-a
        version: {{ .Chart.AppVersion }}
        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
        app.kubernetes.io/instance: {{ .Release.Name }}
@@ -122,8 +122,8 @@ metadata:
   name: {{ include "rocketmq.fullname" . }}-broker-a-s
   namespace: {{ .Release.Namespace }}
   labels:
-    app: broker
-    app.kubernetes.io/component: broker
+    app: broker-a-s
+    app.kubernetes.io/component: broker-a-s
     app.kubernetes.io/name: {{ include "rocketmq.name" . }}
     helm.sh/chart: {{ include "rocketmq.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -133,15 +133,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broker
-      app.kubernetes.io/component: broker
+      app: broker-a-s
+      app.kubernetes.io/component: broker-a-s
       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
      labels:
-       app: broker
-       app.kubernetes.io/component: broker
+       app: broker-a-s
+       app.kubernetes.io/component: broker-a-s
        version: {{ .Chart.AppVersion }}
        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
        app.kubernetes.io/instance: {{ .Release.Name }}
@@ -197,8 +197,8 @@ metadata:
   name: {{ include "rocketmq.fullname" . }}-broker-b
   namespace: {{ .Release.Namespace }}
   labels:
-    app: broker
-    app.kubernetes.io/component: broker
+    app: broker-b
+    app.kubernetes.io/component: broker-b
     app.kubernetes.io/name: {{ include "rocketmq.name" . }}
     helm.sh/chart: {{ include "rocketmq.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -208,15 +208,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broker
-      app.kubernetes.io/component: broker
+      app: broker-b
+      app.kubernetes.io/component: broker-b
       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
      labels:
-       app: broker
-       app.kubernetes.io/component: broker
+       app: broker-b
+       app.kubernetes.io/component: broker-b
        version: {{ .Chart.AppVersion }}
        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
        app.kubernetes.io/instance: {{ .Release.Name }}
@@ -272,8 +272,8 @@ metadata:
   name: {{ include "rocketmq.fullname" . }}-broker-b-s
   namespace: {{ .Release.Namespace }}
   labels:
-    app: broker
-    app.kubernetes.io/component: broker
+    app: broker-b-s
+    app.kubernetes.io/component: broker-b-s
     app.kubernetes.io/name: {{ include "rocketmq.name" . }}
     helm.sh/chart: {{ include "rocketmq.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -283,15 +283,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broker
-      app.kubernetes.io/component: broker
+      app: broker-b-s
+      app.kubernetes.io/component: broker-b-s
       app.kubernetes.io/name: {{ include "rocketmq.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
      labels:
-       app: broker
-       app.kubernetes.io/component: broker
+       app: broker-b-s
+       app.kubernetes.io/component: broker-b-s
        version: {{ .Chart.AppVersion }}
        app.kubernetes.io/name: {{ include "rocketmq.name" . }}
        app.kubernetes.io/instance: {{ .Release.Name }}
