@@ -35,9 +35,18 @@ spec:
       - name: rocketmq
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.namesrv.requests.cpu }}
+            memory: {{ .Values.resources.namesrv.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.namesrv.limits.cpu }}
+            memory: {{ .Values.resources.namesrv.limits.memory }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.namesrv.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
         command: ["sh","-c",{{ printf "/home/rocketmq/rocketmq-%s/bin/mqnamesrv" $rocketmqVersion }}]
 
 ---
@@ -75,9 +84,18 @@ spec:
       - name: rocketmq
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.perBroker.requests.cpu }}
+            memory: {{ .Values.resources.perBroker.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.perBroker.limits.cpu }}
+            memory: {{ .Values.resources.perBroker.limits.memory }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.broker.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
           - mountPath: /home/rocketmq/logs
@@ -150,9 +168,18 @@ spec:
       - name: rocketmq
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.perBroker.requests.cpu }}
+            memory: {{ .Values.resources.perBroker.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.perBroker.limits.cpu }}
+            memory: {{ .Values.resources.perBroker.limits.memory }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.broker.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-a-s.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
           - mountPath: /home/rocketmq/logs
@@ -225,9 +252,18 @@ spec:
       - name: rocketmq
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.perBroker.requests.cpu }}
+            memory: {{ .Values.resources.perBroker.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.perBroker.limits.cpu }}
+            memory: {{ .Values.resources.perBroker.limits.memory }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.broker.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
           - mountPath: /home/rocketmq/logs
@@ -300,9 +336,18 @@ spec:
       - name: rocketmq
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.perBroker.requests.cpu }}
+            memory: {{ .Values.resources.perBroker.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.perBroker.limits.cpu }}
+            memory: {{ .Values.resources.perBroker.limits.memory }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.broker.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
         command: ["sh","-c", {{ printf "/home/rocketmq/rocketmq-%s/bin/mqbroker -c /home/rocketmq/rocketmq-%s/conf/2m-2s-async/broker-b-s.properties" $rocketmqVersion $rocketmqVersion }}]
         volumeMounts:
           - mountPath: /home/rocketmq/logs

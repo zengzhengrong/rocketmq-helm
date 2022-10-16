@@ -32,8 +32,17 @@ spec:
         image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
         env:
-          - name: TZ
-            value: Asia/Shanghai
+        {{- range .Values.dashboard.envs }}
+          - name: {{ .name }}
+            value: {{ .value }}
+        {{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.dashboard.requests.cpu }}
+            memory: {{ .Values.resources.dashboard.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.dashboard.limits.cpu }}
+            memory: {{ .Values.resources.dashboard.limits.memory }}
         volumeMounts:
           - mountPath: /application.properties
             name: config-application
